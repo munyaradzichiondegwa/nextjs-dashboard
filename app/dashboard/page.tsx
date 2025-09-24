@@ -1,3 +1,43 @@
-export default function Page() {
-  return <p>Dashboard Page</p>;
+// /app/dashboard/(overview)/page.tsx
+import { Suspense } from 'react';
+import { lusitana } from '@/app/ui/fonts';
+import CardWrapper from '@/app/ui/dashboard/cards';
+import RevenueChart from '@/app/ui/dashboard/revenue-chart';
+import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import {
+  CardsSkeleton,
+  RevenueChartSkeleton,
+  LatestInvoicesSkeleton,
+} from '@/app/ui/skeletons';
+import { fetchLatestInvoices } from '@/app/lib/data';
+
+export default async function Page() {
+  const latestInvoices = await fetchLatestInvoices();
+
+  return (
+    <main className="p-4">
+      {/* Page Title */}
+      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
+        Dashboard
+      </h1>
+
+      {/* Top Cards */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Suspense fallback={<CardsSkeleton />}>
+          <CardWrapper />
+        </Suspense>
+      </div>
+
+      {/* Charts Section */}
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+        <Suspense fallback={<RevenueChartSkeleton />}>
+          <RevenueChart />
+        </Suspense>
+
+        <Suspense fallback={<LatestInvoicesSkeleton />}>
+          <LatestInvoices latestInvoices={latestInvoices} />
+        </Suspense>
+      </div>
+    </main>
+  );
 }
