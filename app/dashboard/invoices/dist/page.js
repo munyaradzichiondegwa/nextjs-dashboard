@@ -44,54 +44,28 @@ var fonts_1 = require("@/app/ui/fonts");
 var react_1 = require("react");
 var skeletons_1 = require("@/app/ui/skeletons");
 var data_1 = require("@/app/lib/data");
-var data_2 = require("@/app/lib/data");
-var navigation_1 = require("next/navigation");
-function Page(props) {
+function Page(_a) {
+    var searchParams = _a.searchParams;
     return __awaiter(this, void 0, void 0, function () {
-        export default function Page(props) {
-            return __awaiter(this, void 0, void 0, function () {
-                var searchParams, query, currentPage, totalPages;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, props.searchParams];
-                        case 1:
-                            searchParams = _a.sent();
-                            query = (searchParams === null || searchParams === void 0 ? void 0 : searchParams.query) || '';
-                            currentPage = Number(searchParams === null || searchParams === void 0 ? void 0 : searchParams.page) || 1;
-                            return [4 /*yield*/, data_1.fetchInvoicesPages(query)];
-                        case 2:
-                            totalPages = _a.sent();
-                            return [2 /*return*/, (React.createElement("div", { className: "w-full" },
-                                    React.createElement("div", { className: "flex w-full items-center justify-between" },
-                                        React.createElement("h1", { className: fonts_1.lusitana.className + " text-2xl" }, "Invoices")),
-                                    React.createElement("div", { className: "mt-4 flex items-center justify-between gap-2 md:mt-8" },
-                                        React.createElement(search_1["default"], { placeholder: "Search invoices..." }),
-                                        React.createElement(buttons_1.CreateInvoice, null)),
-                                    React.createElement(react_1.Suspense, { key: query + currentPage, fallback: React.createElement(skeletons_1.InvoicesTableSkeleton, null) },
-                                        React.createElement(table_1["default"], { query: query, currentPage: currentPage })),
-                                    React.createElement("div", { className: "mt-5 flex w-full justify-center" },
-                                        React.createElement(pagination_1["default"], { totalPages: totalPages }))))];
-                    }
-                });
-            });
-        }
-        var params, id, _a, invoice, customers;
+        var query, currentPage, totalPages;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, props.params];
+                case 0:
+                    query = (searchParams === null || searchParams === void 0 ? void 0 : searchParams.query) || '';
+                    currentPage = Number(searchParams === null || searchParams === void 0 ? void 0 : searchParams.page) || 1;
+                    return [4 /*yield*/, data_1.fetchInvoicesPages(query)];
                 case 1:
-                    params = _b.sent();
-                    id = params.id;
-                    return [4 /*yield*/, Promise.all([
-                            data_2.fetchInvoiceById(id),
-                            data_2.fetchCustomers(),
-                        ])];
-                case 2:
-                    _a = _b.sent(), invoice = _a[0], customers = _a[1];
-                    if (!invoice) {
-                        navigation_1.notFound();
-                    }
-                    return [2 /*return*/];
+                    totalPages = _b.sent();
+                    return [2 /*return*/, (React.createElement("div", { className: "w-full" },
+                            React.createElement("div", { className: "flex w-full items-center justify-between" },
+                                React.createElement("h1", { className: fonts_1.lusitana.className + " text-2xl" }, "Invoices")),
+                            React.createElement("div", { className: "mt-4 flex items-center justify-between gap-2 md:mt-8" },
+                                React.createElement(search_1["default"], { placeholder: "Search invoices..." }),
+                                React.createElement(buttons_1.CreateInvoice, null)),
+                            React.createElement(react_1.Suspense, { key: query + currentPage, fallback: React.createElement(skeletons_1.InvoicesTableSkeleton, null) },
+                                React.createElement(table_1["default"], { query: query, currentPage: currentPage })),
+                            React.createElement("div", { className: "mt-5 flex w-full justify-center" },
+                                React.createElement(pagination_1["default"], { totalPages: totalPages }))))];
             }
         });
     });
