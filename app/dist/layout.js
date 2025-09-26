@@ -1,14 +1,7 @@
 "use strict";
 exports.__esModule = true;
-exports.experimental_ppr = exports.metadata = void 0;
 require("@/app/ui/global.css");
 var fonts_1 = require("@/app/ui/fonts");
-exports.metadata = {
-    title: 'Acme Dashboard',
-    description: 'The official Next.js Course Dashboard, built with App Router.',
-    metadataBase: new URL('https://next-learn-dashboard.vercel.sh')
-};
-exports.experimental_ppr = true;
 function RootLayout(_a) {
     var children = _a.children;
     return (React.createElement("html", { lang: "en" },
