@@ -41,57 +41,91 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.deleteInvoice = exports.createInvoice = void 0;
-var postgres_1 = require("postgres");
+exports.deleteInvoice = exports.updateInvoice = exports.createInvoice = exports.authenticate = void 0;
+var auth_1 = require("@/auth");
+var next_auth_1 = require("next-auth");
 var zod_1 = require("zod");
+var postgres_1 = require("@vercel/postgres");
 var cache_1 = require("next/cache");
 var navigation_1 = require("next/navigation");
-var sql = postgres_1["default"](process.env.POSTGRES_URL, { ssl: 'require' });
-var CreateInvoice = zod_1.z.object({
-    customerId: zod_1.z.string().min(1),
-    amount: zod_1.z.preprocess(function (val) { return Number(val); }, zod_1.z.number().positive()),
-    status: zod_1.z["enum"](['pending', 'paid'])
+// --------------------
+// Zod Schema for Invoices
+// --------------------
+var FormSchema = zod_1.z.object({
+    id: zod_1.z.string(),
+    customerId: zod_1.z.string({ invalid_type_error: 'Please select a customer.' }),
+    amount: zod_1.z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
+    status: zod_1.z["enum"](['pending', 'paid'], { invalid_type_error: 'Please select an invoice status.' }),
+    date: zod_1.z.string()
 });
-// ...
-function createInvoice(formData) {
+var CreateInvoice = FormSchema.omit({ id: true, date: true });
+var UpdateInvoice = FormSchema.omit({ id: true, date: true });
+// --------------------
+// Authenticate User
+// --------------------
+function authenticate(prevState, formData) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, customerId, amount, status, amountInCents, date, error_1, error_2;
+        var error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, auth_1.signIn('credentials', formData)];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    if (error_1 instanceof next_auth_1.AuthError) {
+                        switch (error_1.type) {
+                            case 'CredentialsSignin':
+                                return [2 /*return*/, 'Invalid credentials.'];
+                            default:
+                                return [2 /*return*/, 'Something went wrong.'];
+                        }
+                    }
+                    throw error_1;
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.authenticate = authenticate;
+// --------------------
+// Create Invoice
+// --------------------
+function createInvoice(prevState, formData) {
+    return __awaiter(this, void 0, void 0, function () {
+        var validatedFields, _a, customerId, amount, status, amountInCents, date, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _a = CreateInvoice.parse({
+                    validatedFields = CreateInvoice.safeParse({
                         customerId: formData.get('customerId'),
                         amount: formData.get('amount'),
                         status: formData.get('status')
-                    }), customerId = _a.customerId, amount = _a.amount, status = _a.status;
+                    });
+                    if (!validatedFields.success) {
+                        return [2 /*return*/, {
+                                errors: validatedFields.error.flatten().fieldErrors,
+                                message: 'Missing Fields. Failed to Create Invoice.'
+                            }];
+                    }
+                    _a = validatedFields.data, customerId = _a.customerId, amount = _a.amount, status = _a.status;
                     amountInCents = amount * 100;
                     date = new Date().toISOString().split('T')[0];
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, sql(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n      INSERT INTO invoices (customer_id, amount, status, date)\n      VALUES (", ", ", ", ", ", ", ")\n    "], ["\n      INSERT INTO invoices (customer_id, amount, status, date)\n      VALUES (", ", ", ", ", ", ", ")\n    "])), customerId, amountInCents, status, date)];
+                    return [4 /*yield*/, postgres_1.sql(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n      INSERT INTO invoices (customer_id, amount, status, date)\n      VALUES (", ", ", ", ", ", ", ")\n    "], ["\n      INSERT INTO invoices (customer_id, amount, status, date)\n      VALUES (", ", ", ", ", ", ", ")\n    "])), customerId, amountInCents, status, date)];
                 case 2:
                     _b.sent();
                     return [3 /*break*/, 4];
                 case 3:
-                    error_1 = _b.sent();
-                    // We'll also log the error to the console for now
-                    console.error(error_1);
-                    return [2 /*return*/, {
-                            message: 'Database Error: Failed to Create Invoice.'
-                        }];
-                case 4:
-                    _b.trys.push([4, 6, , 7]);
-                    return [4 /*yield*/, sql(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n        UPDATE invoices\n        SET customer_id = ", ", amount = ", ", status = ", "\n        WHERE id = ", "\n      "], ["\n        UPDATE invoices\n        SET customer_id = ", ", amount = ", ", status = ", "\n        WHERE id = ", "\n      "])), customerId, amountInCents, status, id)];
-                case 5:
-                    _b.sent();
-                    return [3 /*break*/, 7];
-                case 6:
                     error_2 = _b.sent();
-                    // We'll also log the error to the console for now
-                    console.error(error_2);
-                    return [2 /*return*/, { message: 'Database Error: Failed to Update Invoice.' }];
-                case 7:
+                    console.error('Create Invoice DB Error:', error_2);
+                    return [2 /*return*/, { message: 'Database Error: Failed to Create Invoice.' }];
+                case 4:
                     cache_1.revalidatePath('/dashboard/invoices');
                     navigation_1.redirect('/dashboard/invoices');
                     return [2 /*return*/];
@@ -100,15 +134,68 @@ function createInvoice(formData) {
     });
 }
 exports.createInvoice = createInvoice;
+// --------------------
+// Update Invoice
+// --------------------
+function updateInvoice(id, prevState, formData) {
+    return __awaiter(this, void 0, void 0, function () {
+        var validatedFields, _a, customerId, amount, status, amountInCents, error_3;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    validatedFields = UpdateInvoice.safeParse({
+                        customerId: formData.get('customerId'),
+                        amount: formData.get('amount'),
+                        status: formData.get('status')
+                    });
+                    if (!validatedFields.success) {
+                        return [2 /*return*/, {
+                                errors: validatedFields.error.flatten().fieldErrors,
+                                message: 'Missing Fields. Failed to Update Invoice.'
+                            }];
+                    }
+                    _a = validatedFields.data, customerId = _a.customerId, amount = _a.amount, status = _a.status;
+                    amountInCents = amount * 100;
+                    _b.label = 1;
+                case 1:
+                    _b.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, postgres_1.sql(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n      UPDATE invoices\n      SET customer_id = ", ", amount = ", ", status = ", "\n      WHERE id = ", "\n    "], ["\n      UPDATE invoices\n      SET customer_id = ", ", amount = ", ", status = ", "\n      WHERE id = ", "\n    "])), customerId, amountInCents, status, id)];
+                case 2:
+                    _b.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_3 = _b.sent();
+                    console.error('Update Invoice DB Error:', error_3);
+                    return [2 /*return*/, { message: 'Database Error: Failed to Update Invoice.' }];
+                case 4:
+                    cache_1.revalidatePath('/dashboard/invoices');
+                    navigation_1.redirect('/dashboard/invoices');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.updateInvoice = updateInvoice;
+// --------------------
+// Delete Invoice
+// --------------------
 function deleteInvoice(id) {
     return __awaiter(this, void 0, void 0, function () {
+        var error_4;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, sql(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n    DELETE FROM invoices WHERE id = ", "\n  "], ["\n    DELETE FROM invoices WHERE id = ", "\n  "])), id)];
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, postgres_1.sql(templateObject_3 || (templateObject_3 = __makeTemplateObject(["DELETE FROM invoices WHERE id = ", ""], ["DELETE FROM invoices WHERE id = ", ""])), id)];
                 case 1:
                     _a.sent();
                     cache_1.revalidatePath('/dashboard/invoices');
-                    return [2 /*return*/];
+                    return [2 /*return*/, { message: 'Deleted Invoice.' }];
+                case 2:
+                    error_4 = _a.sent();
+                    console.error('Delete Invoice DB Error:', error_4);
+                    return [2 /*return*/, { message: 'Database Error: Failed to Delete Invoice.' }];
+                case 3: return [2 /*return*/];
             }
         });
     });

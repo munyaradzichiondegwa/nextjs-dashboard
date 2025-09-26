@@ -36,42 +36,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.metadata = void 0;
-var pagination_1 = require("@/app/ui/invoices/pagination");
-var search_1 = require("@/app/ui/search");
-var table_1 = require("@/app/ui/invoices/table");
-var buttons_1 = require("@/app/ui/invoices/buttons");
-var fonts_1 = require("@/app/ui/fonts");
-var react_1 = require("react");
-var skeletons_1 = require("@/app/ui/skeletons");
-var data_1 = require("@/app/lib/data");
-exports.metadata = {
-    title: 'Invoices | Acme Dashboard'
-};
-function Page(_a) {
-    var searchParams = _a.searchParams;
-    return __awaiter(this, void 0, void 0, function () {
-        var query, currentPage, totalPages;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    query = (searchParams === null || searchParams === void 0 ? void 0 : searchParams.query) || '';
-                    currentPage = Number(searchParams === null || searchParams === void 0 ? void 0 : searchParams.page) || 1;
-                    return [4 /*yield*/, data_1.fetchInvoicesPages(query)];
-                case 1:
-                    totalPages = _b.sent();
-                    return [2 /*return*/, (React.createElement("div", { className: "w-full" },
-                            React.createElement("div", { className: "flex w-full items-center justify-between" },
-                                React.createElement("h1", { className: fonts_1.lusitana.className + " text-2xl" }, "Invoices")),
-                            React.createElement("div", { className: "mt-4 flex items-center justify-between gap-2 md:mt-8" },
-                                React.createElement(search_1["default"], { placeholder: "Search invoices..." }),
-                                React.createElement(buttons_1.CreateInvoice, null)),
-                            React.createElement(react_1.Suspense, { key: query + currentPage, fallback: React.createElement(skeletons_1.InvoicesTableSkeleton, null) },
-                                React.createElement(table_1["default"], { query: query, currentPage: currentPage })),
-                            React.createElement("div", { className: "mt-5 flex w-full justify-center" },
-                                React.createElement(pagination_1["default"], { totalPages: totalPages }))))];
-            }
-        });
-    });
+var nav_links_1 = require("@/app/ui/dashboard/nav-links");
+var outline_1 = require("@heroicons/react/24/outline");
+var auth_1 = require("@/auth");
+function SideNav() {
+    var _this = this;
+    return (React.createElement("div", { className: "flex h-full flex-col px-3 py-4 md:px-2" },
+        "// ...",
+        React.createElement("div", { className: "flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2" },
+            React.createElement(nav_links_1["default"], null),
+            React.createElement("div", { className: "hidden h-auto w-full grow rounded-md bg-gray-50 md:block" }),
+            React.createElement("form", { action: function () { return __awaiter(_this, void 0, void 0, function () {
+                    'use server';
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, auth_1.signOut({ redirectTo: '/' })];
+                            case 1:
+                                _a.sent();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); } },
+                React.createElement("button", { className: "flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3" },
+                    React.createElement(outline_1.PowerIcon, { className: "w-6" }),
+                    React.createElement("div", { className: "hidden md:block" }, "Sign Out"))))));
 }
-exports["default"] = Page;
+exports["default"] = SideNav;

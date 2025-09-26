@@ -36,32 +36,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-// /app/dashboard/(overview)/page.tsx
-var react_1 = require("react");
-var fonts_1 = require("@/app/ui/fonts");
 var cards_1 = require("@/app/ui/dashboard/cards");
 var revenue_chart_1 = require("@/app/ui/dashboard/revenue-chart");
 var latest_invoices_1 = require("@/app/ui/dashboard/latest-invoices");
-var skeletons_1 = require("@/app/ui/skeletons");
+var fonts_1 = require("@/app/ui/fonts");
 var data_1 = require("@/app/lib/data");
 function Page() {
     return __awaiter(this, void 0, void 0, function () {
-        var latestInvoices;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, data_1.fetchLatestInvoices()];
+        var revenue, latestInvoices, _a, numberOfInvoices, numberOfCustomers, totalPaidInvoices, totalPendingInvoices;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, data_1.fetchRevenue()];
                 case 1:
-                    latestInvoices = _a.sent();
-                    return [2 /*return*/, (React.createElement("main", { className: "p-4" },
+                    revenue = _b.sent();
+                    return [4 /*yield*/, data_1.fetchLatestInvoices()];
+                case 2:
+                    latestInvoices = _b.sent();
+                    return [4 /*yield*/, data_1.fetchCardData()];
+                case 3:
+                    _a = _b.sent(), numberOfInvoices = _a.numberOfInvoices, numberOfCustomers = _a.numberOfCustomers, totalPaidInvoices = _a.totalPaidInvoices, totalPendingInvoices = _a.totalPendingInvoices;
+                    return [2 /*return*/, (React.createElement("main", null,
                             React.createElement("h1", { className: fonts_1.lusitana.className + " mb-4 text-xl md:text-2xl" }, "Dashboard"),
                             React.createElement("div", { className: "grid gap-6 sm:grid-cols-2 lg:grid-cols-4" },
-                                React.createElement(react_1.Suspense, { fallback: React.createElement(skeletons_1.CardsSkeleton, null) },
-                                    React.createElement(cards_1["default"], null))),
+                                React.createElement(cards_1.Card, { title: "Collected", value: totalPaidInvoices, type: "collected" }),
+                                React.createElement(cards_1.Card, { title: "Pending", value: totalPendingInvoices, type: "pending" }),
+                                React.createElement(cards_1.Card, { title: "Total Invoices", value: numberOfInvoices, type: "invoices" }),
+                                React.createElement(cards_1.Card, { title: "Total Customers", value: numberOfCustomers, type: "customers" })),
                             React.createElement("div", { className: "mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8" },
-                                React.createElement(react_1.Suspense, { fallback: React.createElement(skeletons_1.RevenueChartSkeleton, null) },
-                                    React.createElement(revenue_chart_1["default"], null)),
-                                React.createElement(react_1.Suspense, { fallback: React.createElement(skeletons_1.LatestInvoicesSkeleton, null) },
-                                    React.createElement(latest_invoices_1["default"], { latestInvoices: latestInvoices })))))];
+                                React.createElement(revenue_chart_1["default"], { revenue: revenue }),
+                                React.createElement(latest_invoices_1["default"], { latestInvoices: latestInvoices }))))];
             }
         });
     });

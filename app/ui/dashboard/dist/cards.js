@@ -37,7 +37,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.Card = void 0;
-// /app/ui/dashboard/cards.tsx
 var outline_1 = require("@heroicons/react/24/outline");
 var fonts_1 = require("@/app/ui/fonts");
 var data_1 = require("@/app/lib/data");
@@ -48,6 +47,17 @@ var iconMap = {
     pending: outline_1.ClockIcon,
     invoices: outline_1.InboxIcon
 };
+// Individual Card component
+function Card(_a) {
+    var title = _a.title, value = _a.value, type = _a.type;
+    var Icon = iconMap[type];
+    return (React.createElement("div", { className: "rounded-xl bg-gray-50 p-2 shadow-sm" },
+        React.createElement("div", { className: "flex items-center p-4" },
+            Icon && React.createElement(Icon, { className: "h-5 w-5 text-gray-700" }),
+            React.createElement("h3", { className: "ml-2 text-sm font-medium" }, title)),
+        React.createElement("p", { className: fonts_1.lusitana.className + " truncate rounded-xl bg-white px-4 py-8 text-center text-2xl" }, value)));
+}
+exports.Card = Card;
 // Wrapper component to fetch all card data and render cards
 function CardWrapper() {
     return __awaiter(this, void 0, void 0, function () {
@@ -67,14 +77,3 @@ function CardWrapper() {
     });
 }
 exports["default"] = CardWrapper;
-// Individual Card component
-function Card(_a) {
-    var title = _a.title, value = _a.value, type = _a.type;
-    var Icon = iconMap[type];
-    return (React.createElement("div", { className: "rounded-xl bg-gray-50 p-2 shadow-sm" },
-        React.createElement("div", { className: "flex items-center p-4" },
-            Icon && React.createElement(Icon, { className: "h-5 w-5 text-gray-700" }),
-            React.createElement("h3", { className: "ml-2 text-sm font-medium" }, title)),
-        React.createElement("p", { className: fonts_1.lusitana.className + " truncate rounded-xl bg-white px-4 py-8 text-center text-2xl" }, value)));
-}
-exports.Card = Card;

@@ -1,4 +1,3 @@
-// /app/ui/dashboard/cards.tsx
 import {
   BanknotesIcon,
   ClockIcon,
@@ -15,29 +14,6 @@ const iconMap = {
   pending: ClockIcon,
   invoices: InboxIcon,
 };
-
-// Wrapper component to fetch all card data and render cards
-export default async function CardWrapper() {
-  const {
-    numberOfInvoices,
-    numberOfCustomers,
-    totalPaidInvoices,
-    totalPendingInvoices,
-  } = await fetchCardData();
-
-  return (
-    <>
-      <Card title="Collected" value={totalPaidInvoices} type="collected" />
-      <Card title="Pending" value={totalPendingInvoices} type="pending" />
-      <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
-      <Card
-        title="Total Customers"
-        value={numberOfCustomers}
-        type="customers"
-      />
-    </>
-  );
-}
 
 // Individual Card component
 export function Card({
@@ -63,5 +39,24 @@ export function Card({
         {value}
       </p>
     </div>
+  );
+}
+
+// Wrapper component to fetch all card data and render cards
+export default async function CardWrapper() {
+  const {
+    numberOfInvoices,
+    numberOfCustomers,
+    totalPaidInvoices,
+    totalPendingInvoices,
+  } = await fetchCardData();
+
+  return (
+    <>
+      <Card title="Collected" value={totalPaidInvoices} type="collected" />
+      <Card title="Pending" value={totalPendingInvoices} type="pending" />
+      <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
+      <Card title="Total Customers" value={numberOfCustomers} type="customers" />
+    </>
   );
 }

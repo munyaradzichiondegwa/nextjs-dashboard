@@ -36,42 +36,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.metadata = void 0;
-var pagination_1 = require("@/app/ui/invoices/pagination");
-var search_1 = require("@/app/ui/search");
-var table_1 = require("@/app/ui/invoices/table");
-var buttons_1 = require("@/app/ui/invoices/buttons");
+var outline_1 = require("@heroicons/react/24/outline");
+var clsx_1 = require("clsx");
+var image_1 = require("next/image");
 var fonts_1 = require("@/app/ui/fonts");
-var react_1 = require("react");
-var skeletons_1 = require("@/app/ui/skeletons");
-var data_1 = require("@/app/lib/data");
-exports.metadata = {
-    title: 'Invoices | Acme Dashboard'
-};
-function Page(_a) {
-    var searchParams = _a.searchParams;
+// Temporary: you can fetch or import this data instead
+var latestInvoices = [
+    {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        amount: '$250.00',
+        image_url: '/default-avatar.png'
+    },
+    {
+        id: '2',
+        name: 'Jane Smith',
+        email: 'jane@example.com',
+        amount: '$180.00',
+        image_url: '/default-avatar.png'
+    },
+];
+function LatestInvoices() {
     return __awaiter(this, void 0, void 0, function () {
-        var query, currentPage, totalPages;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    query = (searchParams === null || searchParams === void 0 ? void 0 : searchParams.query) || '';
-                    currentPage = Number(searchParams === null || searchParams === void 0 ? void 0 : searchParams.page) || 1;
-                    return [4 /*yield*/, data_1.fetchInvoicesPages(query)];
-                case 1:
-                    totalPages = _b.sent();
-                    return [2 /*return*/, (React.createElement("div", { className: "w-full" },
-                            React.createElement("div", { className: "flex w-full items-center justify-between" },
-                                React.createElement("h1", { className: fonts_1.lusitana.className + " text-2xl" }, "Invoices")),
-                            React.createElement("div", { className: "mt-4 flex items-center justify-between gap-2 md:mt-8" },
-                                React.createElement(search_1["default"], { placeholder: "Search invoices..." }),
-                                React.createElement(buttons_1.CreateInvoice, null)),
-                            React.createElement(react_1.Suspense, { key: query + currentPage, fallback: React.createElement(skeletons_1.InvoicesTableSkeleton, null) },
-                                React.createElement(table_1["default"], { query: query, currentPage: currentPage })),
-                            React.createElement("div", { className: "mt-5 flex w-full justify-center" },
-                                React.createElement(pagination_1["default"], { totalPages: totalPages }))))];
-            }
+        return __generator(this, function (_a) {
+            return [2 /*return*/, (React.createElement("div", { className: "flex w-full flex-col md:col-span-4" },
+                    React.createElement("h2", { className: fonts_1.lusitana.className + " mb-4 text-xl md:text-2xl" }, "Latest Invoices"),
+                    React.createElement("div", { className: "flex grow flex-col justify-between rounded-xl bg-gray-50 p-4" },
+                        React.createElement("div", { className: "bg-white px-6" }, latestInvoices.map(function (invoice, i) { return (React.createElement("div", { key: invoice.id, className: clsx_1["default"]('flex flex-row items-center justify-between py-4', { 'border-t': i !== 0 }) },
+                            React.createElement("div", { className: "flex items-center" },
+                                React.createElement(image_1["default"], { src: invoice.image_url, alt: invoice.name + "'s profile picture", className: "mr-4 rounded-full", width: 32, height: 32 }),
+                                React.createElement("div", { className: "min-w-0" },
+                                    React.createElement("p", { className: "truncate text-sm font-semibold md:text-base" }, invoice.name),
+                                    React.createElement("p", { className: "hidden text-sm text-gray-500 sm:block" }, invoice.email))),
+                            React.createElement("p", { className: fonts_1.lusitana.className + " truncate text-sm font-medium md:text-base" }, invoice.amount))); })),
+                        React.createElement("div", { className: "flex items-center pb-2 pt-6" },
+                            React.createElement(outline_1.ArrowPathIcon, { className: "h-5 w-5 text-gray-500" }),
+                            React.createElement("h3", { className: "ml-2 text-sm text-gray-500 " }, "Updated just now")))))];
         });
     });
 }
-exports["default"] = Page;
+exports["default"] = LatestInvoices;
