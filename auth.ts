@@ -1,3 +1,4 @@
+// /auth.ts
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
@@ -6,16 +7,17 @@ import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 
+// Initialize Postgres client
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-// Fetch user from DB
+// Fetch user by email
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const users = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
-    return users[0];
+    const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
+    return user[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
-    return undefined;
+    throw new Error('Failed to fetch user.');
   }
 }
 
@@ -23,45 +25,39 @@ export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
-        password: { label: 'Password', type: 'password' },
-      },
       async authorize(credentials) {
-        // Validate credentials with Zod
-        const parsed = z
+        // Validate inputs using zod
+        const parsedCredentials = z
           .object({
             email: z.string().email(),
             password: z.string().min(6),
           })
           .safeParse(credentials);
 
-        if (!parsed.success) {
-          console.log('Invalid input format:', parsed.error.format());
+        if (!parsedCredentials.success) {
+          console.log('Invalid input format.');
           return null;
         }
 
-        const { email, password } = parsed.data;
+        const { email, password } = parsedCredentials.data;
+
+        // Find user in DB
         const user = await getUser(email);
-
         if (!user) {
-          console.log('User not found');
+          console.log('No user found with this email.');
           return null;
         }
 
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          console.log('Invalid password');
+        // Verify password
+        const passwordsMatch = await bcrypt.compare(password, user.password);
+        if (!passwordsMatch) {
+          console.log('Invalid password.');
           return null;
         }
 
-        // Return user object for session
+        // Authentication successful
         return user;
       },
     }),
   ],
-  pages: {
-    signIn: '/auth/signin', // optional custom sign-in page
-  },
 });
