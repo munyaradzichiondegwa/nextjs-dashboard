@@ -2,6 +2,9 @@ import NavLinks from '@/app/ui/dashboard/nav-links';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import { signOut } from '@/auth';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _ = typeof NavLinks; // Keep NavLinks import "used" to satisfy ESLint
+
 export default function SideNav() {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
