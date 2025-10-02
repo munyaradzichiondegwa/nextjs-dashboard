@@ -1,11 +1,7 @@
 import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
-import { CustomersTableType, FormattedCustomersTable } from '@/app/lib/definitions';
-
-// Keep CustomersTableType to avoid unused import errors
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type _CustomersTableType = CustomersTableType;
+import { FormattedCustomersTable } from '@/app/lib/definitions';
 
 export default async function CustomersTable({
   customers,
